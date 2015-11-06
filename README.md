@@ -1,1 +1,1 @@
-# junit
+# junit and mocking course
