@@ -2,40 +2,37 @@ package se.coredev.mocking;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import se.coredev.mocking.model.User;
 import se.coredev.mocking.repository.RepositoryException;
 import se.coredev.mocking.repository.UserRepository;
 
-public class UserServiceTest {
+@RunWith(MockitoJUnitRunner.class)
+public final class UserServiceTest {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private UserRepository userRepositoryMock;
-	private IdGenerator idGeneratorMock;
-	private UserService service;
-	private String userId = "1001";
-
-	@Before
-	public void setup() {
-		userRepositoryMock = mock(UserRepository.class);
-		idGeneratorMock = mock(IdGenerator.class);
-		service = new UserService(userRepositoryMock, idGeneratorMock);
-	}
+	@Mock private UserRepository userRepositoryMock;
+	@Mock private IdGenerator idGeneratorMock;
+	@InjectMocks private UserService service;
+	
+	private final String userId = "1001";
+	private final String username = "Yoda";
+	private final String password = "secret";
 
 	@Test
 	public void shouldThrowServiceExceptionWhenUsernameIsAlreadyTaken() {
-
-		String username = "Yoda";
 
 		// Setup expectation
 		thrown.expect(ServiceException.class);
@@ -53,9 +50,6 @@ public class UserServiceTest {
 
 	@Test
 	public void canCreateUser() {
-
-		String username = "Yoda";
-		String password = "secret";
 
 		// Setup mock
 		when(userRepositoryMock.usernameExists(username)).thenReturn(false);
@@ -75,29 +69,18 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void willThrowServiceExceptionForNonExistingUser() throws RepositoryException
-	{
+	public void willThrowServiceExceptionForNonExistingUser() throws RepositoryException {
 		// Setup mock
 		when(userRepositoryMock.get(userId)).thenThrow(new RepositoryException(""));
-		
+
 		// Setup expectation
 		thrown.expect(ServiceException.class);
-		
+
 		// Test method
 		service.getUserById(userId);
-		
-		// Verify method invocation on mock objects		
+
+		// Verify method invocation on mock objects
 		verify(userRepositoryMock).get(userId);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

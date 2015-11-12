@@ -1,13 +1,13 @@
 package se.coredev.zoo;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-import org.hamcrest.core.IsSame;
-import org.junit.After;
-import org.junit.AfterClass;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -38,23 +38,6 @@ public class ZooTest {
 		zoo.addAnimal(spider);
 	}
 
-	//	@Test(expected = ZooException.class)
-//	public void shouldNotAllowDangerousAnimal() {
-//		Animal spider = new Spider("1001", "Fido");
-//		zoo.addAnimal(spider);
-//	}
-	
-//	@Test
-//	public void shouldNotAllowDangerousAnimal() {
-//		Animal spider = new Spider("1001", "Fido");
-//		
-//		try {
-//			zoo.addAnimal(spider);
-//			fail();
-//		}
-//		catch (ZooException e) {}
-//	}
-
 	@Test
 	public void animalShouldBeInZooAfterAdd() {
 		Animal dog = new Dog("1001", "Fido");
@@ -75,4 +58,23 @@ public class ZooTest {
 		assertFalse(added);
 	}
 
+	@Test
+	public void listenersWillBeNotified() {
+		
+		AtomicBoolean added = new AtomicBoolean(false);
+		Animal dog = new Dog("1001", "Fido");
+		
+		zoo.addListener(new ZooListener() {
+			
+			@Override
+			public void animalAdded(Animal animal) {
+				assertThat(animal, equalTo(dog));
+				added.set(true);
+			}
+		});
+		
+		zoo.addAnimal(dog);
+		assertTrue(added.get());
+	}
+	
 }

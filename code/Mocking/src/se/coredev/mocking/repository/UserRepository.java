@@ -9,5 +9,7 @@ public interface UserRepository {
 	void add(User user);
 
 	User get(String userId) throws RepositoryException;
+	
+	boolean authenticate(String username, String password) throws RepositoryException;
 
 }
