@@ -1,21 +1,33 @@
 package se.coredev.zoo.model;
 
+import java.util.UUID;
+
 public abstract class Animal {
 
-	private String id;
-	private String name;
+	private final String id;
+	private final String name;
+	private final boolean domestic;
 
-	protected Animal(String id, String name) {
-		this.id = id;
+	protected Animal(String name, boolean domestic) {
+		this.id = UUID.randomUUID().toString();
 		this.name = name;
+		this.domestic = domestic;
 	}
-
+	
 	public String getId() {
 		return id;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isDomestic() {
+		return domestic;
+	}
+
+	public boolean isWild() {
+		return !domestic;
 	}
 
 	@Override

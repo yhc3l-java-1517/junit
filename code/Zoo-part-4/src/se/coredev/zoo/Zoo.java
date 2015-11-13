@@ -8,30 +8,43 @@ import se.coredev.zoo.model.Dangerous;
 
 public final class Zoo {
 
-	private Set<Animal> animals;
-	private Set<ZooListener> listeners;
+	private final Set<ZooListener> listeners;
+	private final ZooStorage wildStorage;
+	private final ZooStorage domesticStorage;
 
-	public Zoo() {
-		animals = new HashSet<>();
-		listeners = new HashSet<>();
+	public Zoo(ZooStorage wildStorage, ZooStorage domesticStorage) {
+		this.wildStorage = wildStorage;
+		this.domesticStorage = domesticStorage;
+		this.listeners = new HashSet<>();
 	}
 
-	public boolean addAnimal(Animal animal) {
-		
+	public void addAnimal(Animal animal) {
+
 		if (animal instanceof Dangerous) {
 			throw new ZooException("Can not add a dangerous animal");
 		}
 
-		if (animals.add(animal)) {
-			notifyListeners(animal);
-			return true;
+		if (animal.isDomestic()) {
+			domesticStorage.addAnimal(animal);
 		}
-
-		return false;
+		else {
+			wildStorage.addAnimal(animal);
+		}
+		notifyListeners(animal);
 	}
 
 	public void addListener(ZooListener listener) {
 		listeners.add(listener);
+	}
+
+	public Animal getAnimal(String id) {
+		Animal animal = domesticStorage.getById(id);
+		
+		if (animal == null) {
+			return wildStorage.getById(id);
+		}
+
+		return animal;
 	}
 
 	private void notifyListeners(Animal animal) {
